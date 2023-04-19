@@ -135,7 +135,8 @@ public class ConnectionMaster : BritoBehavior
 
     public delegate void OnReceiveResponse();
 
-    IEnumerator HandleSocket(Socket socket, EndPoint endPoint, byte[] buffer, OnReceiveResponse function,
+    IEnumerator HandleSocket(Socket socket, EndPoint endPoint, byte[] buffer
+        , OnReceiveResponse function,
     bool commandSocket)
     {
         bool CommandReceived()
