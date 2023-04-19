@@ -16,19 +16,19 @@ public abstract class BritoBehavior : MonoBehaviour
         
     }
 
-    public new void print(object message)
+    public static new void print(object message)
     {
         Sys.Log(message);
     }
 
-    public void error(object message)
+    public static void error(object message)
     {
         Sys.LogError(message);
     }
 
-    public float abs(float value) =>
+    public static float abs(float value) =>
         Mathf.Abs(value);
 
-    public float sqrt(float value) =>
+    public static float sqrt(float value) =>
         Mathf.Sqrt(value);
 }
