@@ -4,21 +4,36 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
+
 public class Node : MonoBehaviour
 {
-    TMP_Dropdown dropdown;
+    // Variables to phase out 
     TextMeshProUGUI size_text; 
     Button increase;
     Button decrease;
+
+    // Variables to keep
     int value = 20;  
     Canvas canvas;
+
+    [Header("Image Properties")]
+    [SerializeField] Image frameImage;
+    // Possilbe frame colors:
+    /*
+     #b27b14
+     #3e2e4f
+     #843021
+     #011434
+    */
+    [SerializeField] Color frameColor;
+
     void Start()
     {
         // Get canvas component for drag event
         canvas = transform.gameObject.GetComponentInParent<Canvas>();
 
 
-        dropdown = GetComponentInChildren<TMP_Dropdown>();
+        // We'll eventually get rid of this
         foreach(Transform child in transform)
         {
             Debug.Log(child.gameObject.tag);
@@ -39,8 +54,10 @@ public class Node : MonoBehaviour
             }
 
         }
-        dropdown.onValueChanged.AddListener(delegate { UpdateNode(); });
         decrease.transform.gameObject.SetActive(false);
+
+        // Set frame color
+        frameImage.color = frameColor;
         UpdateNode();
     }
 
@@ -84,8 +101,10 @@ public class Node : MonoBehaviour
         size_text.text = value.ToString();
         UpdateNode();
     }
-        public void UpdateNode()
+    
+    public void UpdateNode()
     {
-        dropdown.transform.parent.gameObject.transform.gameObject.name = dropdown.options[dropdown.value].text[0] + " " + value.ToString();
+        Debug.Log("Haha I don't update anymore :)");
+        //dropdown.transform.parent.gameObject.transform.gameObject.name = dropdown.options[dropdown.value].text[0] + " " + value.ToString();
     }
 }

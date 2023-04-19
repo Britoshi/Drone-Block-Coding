@@ -7,7 +7,6 @@ public class NodeManager : MonoBehaviour
 {
 
     [Header("Properties")]
-    [SerializeField] Button nodeButton; 
     [SerializeField] Button compileButton;
     [SerializeField] Transform nodeContainer;
 
@@ -15,9 +14,7 @@ public class NodeManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {  
-            nodeButton.onClick.AddListener(CreateNode);  
             compileButton.onClick.AddListener(Compile);  
-
             print(transform.Find("BG"));
     }
 
@@ -30,9 +27,6 @@ public class NodeManager : MonoBehaviour
             lastNode = nodeContainer.GetChild(nodeContainer.childCount - 1); 
             position = lastNode.position;
         }        
-
-        
-
         GameObject node = Instantiate(nodePrefab, nodeContainer);   
     }
 
