@@ -8,7 +8,6 @@ using TMPro;
 public class Node : MonoBehaviour
 {
     // Variables to phase out 
-    TextMeshProUGUI size_text; 
     Button increase;
     Button decrease;
 
@@ -16,8 +15,20 @@ public class Node : MonoBehaviour
     int value = 20;  
     Canvas canvas;
 
+    [Header("Outside Scripts")]
+    [SerializeField] NodeManager nodeManager;
+
+    [Header("Node Properties")]
+    // Commands possible: F, B, L, R, U, D, CC, C
+    [SerializeField] string nodeCommand;
+    [SerializeField] TextMeshProUGUI sizeText;
+    [SerializeField] Button increaseButton;
+    [SerializeField] Button decreaseButton;
+
     [Header("Image Properties")]
     [SerializeField] Image frameImage;
+    [SerializeField] Image iconImage;
+    [SerializeField] Sprite iconSprite;
     // Possilbe frame colors:
     /*
      #b27b14
@@ -26,49 +37,43 @@ public class Node : MonoBehaviour
      #011434
     */
     [SerializeField] Color frameColor;
+    
+    [Header("Behavior Properties")]
+    [SerializeField] public bool isDraggable = true;
+
+
 
     void Start()
     {
         // Get canvas component for drag event
         canvas = transform.gameObject.GetComponentInParent<Canvas>();
-
-
-        // We'll eventually get rid of this
-        foreach(Transform child in transform)
-        {
-            Debug.Log(child.gameObject.tag);
-            if(child.gameObject.tag == "Label")
-            {
-                size_text = child.GetComponent<TextMeshProUGUI>();
-                size_text.text = value.ToString();
-            }
-            if(child.gameObject.name == "Increase")
-            {
-                increase = child.GetComponent<Button>();
-                increase.onClick.AddListener(delegate { ValueUpdate("+"); });
-            }
-            if(child.gameObject.name == "Decrease")
-            {
-                decrease = child.GetComponent<Button>();
-                decrease.onClick.AddListener(delegate { ValueUpdate("-"); });
-            }
-
-        }
-        decrease.transform.gameObject.SetActive(false);
+        sizeText.text = value.ToString();
+        decreaseButton.onClick.AddListener(delegate {ValueUpdate("-"); });
+        increaseButton.onClick.AddListener(delegate {ValueUpdate("+"); });
+        decreaseButton.transform.gameObject.SetActive(false);
 
         // Set frame color
         frameImage.color = frameColor;
+        iconImage.sprite = iconSprite;
         UpdateNode();
     }
 
     public void DragHandler(BaseEventData data)
     {
+        if(!isDraggable) return;
+
         PointerEventData pointerData = (PointerEventData)data;
         Vector2 localPointerPosition;
         if (RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.transform as RectTransform, pointerData.position, pointerData.pressEventCamera, out localPointerPosition))
         {
             transform.position = canvas.transform.TransformPoint(localPointerPosition);
         }
+    }
+
+    public void ClickHandler(BaseEventData data)
+    {
+        if(isDraggable) return;
+        nodeManager.CreateNode(this.gameObject);
     }
 
     public void ValueUpdate(string op)
@@ -79,11 +84,11 @@ public class Node : MonoBehaviour
             value += 5;
             if (value == 360)
             {
-                increase.transform.gameObject.SetActive(false);
+                increaseButton.transform.gameObject.SetActive(false);
             }
             if(value - 5 == 20)
             {
-                decrease.transform.gameObject.SetActive(true);
+                decreaseButton.transform.gameObject.SetActive(true);
             }
         }
         else
@@ -91,20 +96,19 @@ public class Node : MonoBehaviour
             value -= 5;
             if(value == 20)
             {
-                decrease.transform.gameObject.SetActive(false);
+                decreaseButton.transform.gameObject.SetActive(false);
             }
             if(value + 5 == 360)
             {
-                increase.transform.gameObject.SetActive(true);
+                increaseButton.transform.gameObject.SetActive(true);
             }
         }
-        size_text.text = value.ToString();
+        sizeText.text = value.ToString();
         UpdateNode();
     }
     
     public void UpdateNode()
     {
-        Debug.Log("Haha I don't update anymore :)");
-        //dropdown.transform.parent.gameObject.transform.gameObject.name = dropdown.options[dropdown.value].text[0] + " " + value.ToString();
+        gameObject.name = nodeCommand + " " + value.ToString();
     }
 }
