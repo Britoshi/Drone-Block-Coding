@@ -8,8 +8,8 @@ public class NodeManager : MonoBehaviour
     [Header("Properties")]
     [SerializeField] Button compileButton;
     [SerializeField] Transform nodeContainer;
-
     [SerializeField] GameObject nodePrefab;    
+    
 
     int currNodeIndex = 0;
     SortedDictionary<int, Vector2> positions = new SortedDictionary<int, Vector2>();
@@ -65,14 +65,17 @@ public class NodeManager : MonoBehaviour
                 }
             } 
     }
-    public void UpdateNodePositions()
+    public void UpdateNodePositions(int originalIndex, int newIndex)
     {
-        // Vector2[] positions = new Vector2[nodeContainer.childCount];
-        // for(int i = 0; i < nodeContainer.childCount; i++)
-        // {
-        //     positions[i] = nodeContainer.GetChild(i).GetComponent<RectTransform>().anchoredPosition;
-        // }
-
+        Vector2 temp = positions[originalIndex];
+        positions[originalIndex] = positions[newIndex];
+        positions[newIndex] = temp;
+        nodeContainer.GetChild(originalIndex).SetSiblingIndex(newIndex);
+        nodeContainer.GetChild(newIndex).SetSiblingIndex(originalIndex);
+    }
+    /*
+    {
+        // We'll actually just take the index of the temp object and set the sibling index of the node to that
         Vector2 currentNodePosition = Vector2.zero;
         for(int i = 0; i < nodeContainer.childCount; i++)
         {
@@ -101,6 +104,7 @@ public class NodeManager : MonoBehaviour
             }           
         }
     }
+    */
 
 
 }

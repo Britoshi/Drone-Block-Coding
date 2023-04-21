@@ -67,7 +67,7 @@ public class Node : MonoBehaviour
         if(!isDragging)
         {
             placeholder = Instantiate(placeholderPrefab, transform.parent);
-            placeholder.transform.SetSiblingIndex(transform.GetSiblingIndex());
+            placeholder.transform.SetSiblingIndex(transform.GetSiblingIndex() + 1);
             isDragging = true;
         }
         PointerEventData pointerData = (PointerEventData)data;
@@ -75,17 +75,18 @@ public class Node : MonoBehaviour
         if (RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.transform as RectTransform, pointerData.position, pointerData.pressEventCamera, out localPointerPosition))
         {
             transform.position = canvas.transform.TransformPoint(localPointerPosition);
-            nodeManager.ProgramNodeMovement(placeholder, transform.GetComponent<RectTransform>().anchoredPosition);
+            nodeManager.ProgramNodeMovement(placeholder, pointerData.position);
         }
     }
 
     public void DragEndHandler(BaseEventData data)
     {
         if(!isDraggable) return;
-        placeholder.transform.parent = transform.parent.parent;
+        int newIndex = placeholder.transform.GetSiblingIndex();
+        placeholder.transform.SetParent(transform.parent.parent);
         Destroy(placeholder);
         isDragging = false;
-        nodeManager.UpdateNodePositions();
+        nodeManager.UpdateNodePositions(index, newIndex);
     }
 
     public void ClickHandler(BaseEventData data)
