@@ -24,6 +24,7 @@ public class Node : MonoBehaviour
     [SerializeField] TextMeshProUGUI sizeText;
     [SerializeField] Button increaseButton;
     [SerializeField] Button decreaseButton;
+    [SerializeField] GameObject placeholderPrefab;
 
     [Header("Image Properties")]
     [SerializeField] Image frameImage;
@@ -41,7 +42,9 @@ public class Node : MonoBehaviour
     [Header("Behavior Properties")]
     [SerializeField] public bool isDraggable = true;
 
-
+    public int index = -1;
+    GameObject placeholder = null;
+    bool isDragging = false;
 
     void Start()
     {
@@ -61,13 +64,28 @@ public class Node : MonoBehaviour
     public void DragHandler(BaseEventData data)
     {
         if(!isDraggable) return;
-
+        if(!isDragging)
+        {
+            placeholder = Instantiate(placeholderPrefab, transform.parent);
+            placeholder.transform.SetSiblingIndex(transform.GetSiblingIndex());
+            isDragging = true;
+        }
         PointerEventData pointerData = (PointerEventData)data;
         Vector2 localPointerPosition;
         if (RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.transform as RectTransform, pointerData.position, pointerData.pressEventCamera, out localPointerPosition))
         {
             transform.position = canvas.transform.TransformPoint(localPointerPosition);
+            nodeManager.ProgramNodeMovement(placeholder, transform.GetComponent<RectTransform>().anchoredPosition);
         }
+    }
+
+    public void DragEndHandler(BaseEventData data)
+    {
+        if(!isDraggable) return;
+        placeholder.transform.parent = transform.parent.parent;
+        Destroy(placeholder);
+        isDragging = false;
+        nodeManager.UpdateNodePositions();
     }
 
     public void ClickHandler(BaseEventData data)

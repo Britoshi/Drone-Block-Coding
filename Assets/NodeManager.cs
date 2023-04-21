@@ -5,12 +5,14 @@ using UnityEngine.UI;
 
 public class NodeManager : MonoBehaviour
 {
-
     [Header("Properties")]
     [SerializeField] Button compileButton;
     [SerializeField] Transform nodeContainer;
 
     [SerializeField] GameObject nodePrefab;    
+
+    int currNodeIndex = 0;
+    SortedDictionary<int, Vector2> positions = new SortedDictionary<int, Vector2>();
     // Start is called before the first frame update
     void Start()
     {  
@@ -25,6 +27,7 @@ public class NodeManager : MonoBehaviour
         nodeContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(currentProgramField.x, currentProgramField.y + currentGameObjectField.y + 10);
         Vector2 position = Vector2.zero;
         Transform lastNode;
+
         if(nodeContainer.childCount != 0)
         {
             lastNode = nodeContainer.GetChild(nodeContainer.childCount - 1); 
@@ -33,6 +36,9 @@ public class NodeManager : MonoBehaviour
 
         GameObject newNode = Instantiate(node, nodeContainer);
         newNode.GetComponent<Node>().isDraggable = true;
+        newNode.GetComponent<Node>().index = currNodeIndex;
+        positions.Add(currNodeIndex, newNode.GetComponent<RectTransform>().anchoredPosition);
+        currNodeIndex++;
     }
 
     public void Compile()
@@ -42,5 +48,60 @@ public class NodeManager : MonoBehaviour
             Debug.Log(child.gameObject.name);
         }
     }
+
+    public void ProgramNodeMovement(GameObject tempObj, Vector2 position)
+    {
+            for(int j = 0; j < nodeContainer.childCount; j++)
+            {
+                if(position.y > positions[j].y)
+                {
+                    tempObj.transform.SetSiblingIndex(j);
+                    break;
+                }
+                if(position.y < positions[j].y)
+                {
+                    tempObj.transform.SetSiblingIndex(j);
+                    break;
+                }
+            } 
+    }
+    public void UpdateNodePositions()
+    {
+        // Vector2[] positions = new Vector2[nodeContainer.childCount];
+        // for(int i = 0; i < nodeContainer.childCount; i++)
+        // {
+        //     positions[i] = nodeContainer.GetChild(i).GetComponent<RectTransform>().anchoredPosition;
+        // }
+
+        Vector2 currentNodePosition = Vector2.zero;
+        for(int i = 0; i < nodeContainer.childCount; i++)
+        {
+            currentNodePosition = positions[i];
+            for(int j = 0; j < nodeContainer.childCount; j++)
+            {
+                if(i != j)
+                {
+                    if(currentNodePosition.y > positions[j].y)
+                    {
+                        nodeContainer.GetChild(i).SetSiblingIndex(j);
+                        Vector2 temp = positions[i];
+                        positions[i] = positions[j];
+                        positions[j] = temp;
+                        break;
+                    }
+                    if(currentNodePosition.y < positions[j].y)
+                    {
+                        nodeContainer.GetChild(i).SetSiblingIndex(j);
+                        Vector2 temp = positions[i];
+                        positions[i] = positions[j];
+                        positions[j] = temp;
+                        break;
+                    }
+                }
+            }           
+        }
+    }
+
+
 }
 

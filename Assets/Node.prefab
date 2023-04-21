@@ -446,10 +446,10 @@ RectTransform:
   m_Father: {fileID: 3860042332313272046}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 180}
-  m_AnchorMin: {x: 0.82000005, y: 0.13333334}
-  m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 0.4469986, y: 0.15000153}
-  m_SizeDelta: {x: -13.1756, y: -2.9444}
+  m_AnchorMin: {x: 0.82000005, y: 0.121433094}
+  m_AnchorMax: {x: 1, y: 0.53333336}
+  m_AnchoredPosition: {x: -0.19809723, y: -0.35380173}
+  m_SizeDelta: {x: -14.1045, y: -9.3737}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3860042332027024380
 CanvasRenderer:
@@ -728,11 +728,13 @@ MonoBehaviour:
   sizeText: {fileID: 3837075264626759732}
   increaseButton: {fileID: 3860042331231252575}
   decreaseButton: {fileID: 3860042332027024382}
+  placeholderPrefab: {fileID: 2769655794021446779, guid: b18ff807ff01ec242955b739e0e3a80e, type: 3}
   frameImage: {fileID: 3860042331246827941}
   iconImage: {fileID: 389639098531182747}
-  frameIcon: {fileID: 0}
+  iconSprite: {fileID: 0}
   frameColor: {r: 1, g: 1, b: 1, a: 1}
   isDraggable: 1
+  index: -1
 --- !u!114 &3860042332313272045
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -769,6 +771,22 @@ MonoBehaviour:
         - m_Target: {fileID: 3860042332313272044}
           m_TargetAssemblyTypeName: Node, Assembly-CSharp
           m_MethodName: ClickHandler
+          m_Mode: 0
+          m_Arguments:
+            m_ObjectArgument: {fileID: 0}
+            m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+            m_IntArgument: 0
+            m_FloatArgument: 0
+            m_StringArgument: 
+            m_BoolArgument: 0
+          m_CallState: 2
+  - eventID: 14
+    callback:
+      m_PersistentCalls:
+        m_Calls:
+        - m_Target: {fileID: 3860042332313272044}
+          m_TargetAssemblyTypeName: Node, Assembly-CSharp
+          m_MethodName: DragEndHandler
           m_Mode: 0
           m_Arguments:
             m_ObjectArgument: {fileID: 0}
