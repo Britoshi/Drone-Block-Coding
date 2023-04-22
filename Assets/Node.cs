@@ -24,7 +24,6 @@ public class Node : MonoBehaviour
     [SerializeField] TextMeshProUGUI sizeText;
     [SerializeField] Button increaseButton;
     [SerializeField] Button decreaseButton;
-    [SerializeField] GameObject placeholderPrefab;
 
     [Header("Image Properties")]
     [SerializeField] Image frameImage;
@@ -42,9 +41,6 @@ public class Node : MonoBehaviour
     [Header("Behavior Properties")]
     [SerializeField] public bool isDraggable = true;
 
-    public int index = -1;
-    GameObject placeholder = null;
-    bool isDragging = false;
 
     void Start()
     {
