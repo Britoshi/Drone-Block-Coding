@@ -51,27 +51,35 @@ public class NodeManager : MonoBehaviour
 
     public void ProgramNodeMovement(GameObject tempObj, Vector2 position)
     {
-            for(int j = 0; j < nodeContainer.childCount; j++)
-            {
-                if(position.y > positions[j].y)
-                {
-                    tempObj.transform.SetSiblingIndex(j);
-                    break;
-                }
-                if(position.y < positions[j].y)
-                {
-                    tempObj.transform.SetSiblingIndex(j);
-                    break;
-                }
-            } 
+        if(position.y > tempObj.GetComponent<RectTransform>().anchoredPosition.y)
+        {
+            tempObj.transform.SetSiblingIndex(tempObj.transform.GetSiblingIndex() + 1);
+            return;
+        }
+        else
+        {
+            tempObj.transform.SetSiblingIndex(tempObj.transform.GetSiblingIndex() - 1);
+            return;
+        }
     }
+
     public void UpdateNodePositions(int originalIndex, int newIndex)
     {
+        if(newIndex > positions.Count - 1)
+        {
+            newIndex--;
+        }
+        if (newIndex < 0)
+        {
+            newIndex = 0;
+        }
+
+        Debug.Log($"Original Index: {originalIndex} New Index: {newIndex}");
         Vector2 temp = positions[originalIndex];
         positions[originalIndex] = positions[newIndex];
         positions[newIndex] = temp;
         nodeContainer.GetChild(originalIndex).SetSiblingIndex(newIndex);
-        nodeContainer.GetChild(newIndex).SetSiblingIndex(originalIndex);
+        nodeContainer.GetChild(newIndex + 1).SetSiblingIndex(originalIndex);
     }
     /*
     {

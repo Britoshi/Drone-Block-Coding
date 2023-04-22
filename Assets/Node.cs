@@ -82,7 +82,7 @@ public class Node : MonoBehaviour
     public void DragEndHandler(BaseEventData data)
     {
         if(!isDraggable) return;
-        int newIndex = placeholder.transform.GetSiblingIndex();
+        int newIndex = placeholder.transform.GetSiblingIndex() - 1;
         placeholder.transform.SetParent(transform.parent.parent);
         Destroy(placeholder);
         isDragging = false;
