@@ -10,6 +10,13 @@ using UnityEngine;
 
 public class DroneConnectionMaster : BritoBehavior
 {
+    public static DroneConnectionMaster Instance;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -55,9 +62,9 @@ public class DroneConnectionMaster : BritoBehavior
                 //Now do the other stuff.
                 Mission.Update();
             }
-        }; 
+        };
         Tello.startConnecting();//Start trying to connect. 
-          
+
     }
 
 
@@ -103,6 +110,22 @@ public class DroneConnectionMaster : BritoBehavior
 
         if (Input.GetKeyDown(KeyCode.Space))
             Tello.Client.Send("motoron");
+    }
+
+    public static void PrintDroneNotConnected()
+    {
+        print("Drone is not connected!");
+    }
+
+    public static void SendCommands(List<string> commands)
+    {
+        if (!Tello.connected)
+        {
+            PrintDroneNotConnected();
+            return;
+        }
+
+
     }
 
 }
