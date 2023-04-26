@@ -117,22 +117,31 @@ public class DroneConnectionMaster : BritoBehavior
         print("Drone is not connected!");
     }
 
-    public static void SendCommands(List<string> commands)
+
+    public IEnumerator ISendCommand(string[] commands)
+    {
+
+        Tello.takeOff();
+        yield return new WaitForSeconds(1f);
+        foreach (var command in commands)
+        {
+            Tello.Client.Send(command); 
+            yield return new WaitForSeconds(3f);
+        }
+        Tello.land();
+    }
+
+    public void SendCommands(List<string> commands) =>
+        Instance._SendCommands(commands);
+
+    public void _SendCommands(List<string> commands)
     {
         if (!Tello.connected)
         {
             PrintDroneNotConnected();
             return;
         }
-
-        Tello.takeOff();
-
-        foreach (var command in commands)
-        {
-            Tello.Client.Send(command);
-        }
-
-        Tello.land();
+        Instance.StartCoroutine(ISendCommand(commands.ToArray()));
     }
 
 }
