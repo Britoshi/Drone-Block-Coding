@@ -110,6 +110,9 @@ public class DroneConnectionMaster : BritoBehavior
 
         if (Input.GetKeyDown(KeyCode.Space))
             Tello.Client.Send("motoron");
+
+        if (Input.GetKeyDown(KeyCode.L))
+            Tello.land();
     }
 
     public static void PrintDroneNotConnected()
@@ -117,21 +120,24 @@ public class DroneConnectionMaster : BritoBehavior
         print("Drone is not connected!");
     }
 
+    bool Connected() =>
+        Tello.connected;
 
     public IEnumerator ISendCommand(string[] commands)
     {
-
         Tello.takeOff();
         yield return new WaitForSeconds(1f);
+        yield return new WaitUntil(Connected);
         foreach (var command in commands)
         {
             Tello.Client.Send(command); 
-            yield return new WaitForSeconds(3f);
+            yield return new WaitForSeconds(1f);
+            yield return new WaitUntil(Connected);
         }
         Tello.land();
     }
 
-    public void SendCommands(List<string> commands) =>
+    public static void SendCommands(List<string> commands) =>
         Instance._SendCommands(commands);
 
     public void _SendCommands(List<string> commands)

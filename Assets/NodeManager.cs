@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class NodeManager : MonoBehaviour
+
+public class NodeManager : BritoBehavior
 {
     [Header("Properties")]
     [SerializeField] Transform nodeContainer;
     [SerializeField] GameObject nodePrefab;    
+
     
 
     // Start is called before the first frame update
@@ -36,10 +38,12 @@ public class NodeManager : MonoBehaviour
 
     public void Compile()
     {
+        List<string> commands = new List<string>();
         foreach(Transform child in nodeContainer.transform)
         {
-            Debug.Log(child.gameObject.name);
+            commands.Add(child.gameObject.name);
         }
+        DroneConnectionMaster.SendCommands(commands);
     }
 
 }

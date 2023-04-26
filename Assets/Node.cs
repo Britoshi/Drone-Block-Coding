@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
 
-public class Node : MonoBehaviour
+public class Node : BritoBehavior
 {
     // Variables to phase out 
     Button increase;
