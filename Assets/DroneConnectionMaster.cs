@@ -125,6 +125,10 @@ public class DroneConnectionMaster : BritoBehavior
             return;
         }
 
+        foreach (var command in commands)
+        {
+            Tello.Client.Send(command);
+        }
 
     }
 
