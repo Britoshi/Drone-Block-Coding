@@ -5,20 +5,33 @@ using UnityEngine.UI;
 using UnityEngine.Events;
 using UnityEngine.UI.Extensions;
 
-public class NodeManager : BritoBehavior
+public class NodeManager : MonoBehaviour, IDataPersistence
 {
     [Header("Properties")]
     [SerializeField] Transform nodeContainer;
     [SerializeField] GameObject nodePrefab; 
     int _numNodes = 0;   
     private bool _fakePresent = false;
+    List<string> _commands = new List<string>();
     
-
-    // Start is called before the first frame update
-    void Start()
-    {  
+    // INTERFACE METHODS
+    public void LoadProgram(BlockData data)
+    {
+        _commands = data.blockNames;
     }
 
+    public void SaveProgram(ref BlockData data)
+    {
+        data.blockNames = _commands;
+    }
+
+
+    // CLASS METHODS
+
+    void Start()
+    {
+        //LoadProgram(data);
+    }
     void Update()
     {
         if(nodeContainer.childCount > _numNodes)
@@ -49,7 +62,6 @@ public class NodeManager : BritoBehavior
 
     public void Untemplate()
     {
-        print("Untemplating");
         foreach(Transform child in nodeContainer.transform)
         {
             Node node = child.GetComponent<Node>();
@@ -71,5 +83,23 @@ public class NodeManager : BritoBehavior
         }
         DroneConnectionMaster.SendCommands(commands);
     }
+
+    public void NodeRemoved(GameObject node)
+    {
+        _commands.Remove(node.name);   
+    }
+
+    public void NodeUpdated(string oldName, string newName)
+    {
+        _commands.Remove(oldName);
+        _commands.Add(newName);
+    }
+
+    public void AddNode(string nodeName)
+    {
+        _commands.Add(nodeName);
+    }
+
+
 }
 

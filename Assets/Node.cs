@@ -52,7 +52,7 @@ public class Node : BritoBehavior
         sizeText.text = value.ToString();
         decreaseButton.onClick.AddListener(delegate {ValueUpdate("-"); });
         increaseButton.onClick.AddListener(delegate {ValueUpdate("+"); });
-        deleteButton.onClick.AddListener(delegate { Destroy(this.gameObject); });
+        deleteButton.onClick.AddListener(delegate {  DeleteNode(); });
         decreaseButton.transform.gameObject.SetActive(false);
 
         // Disable things if a template
@@ -65,7 +65,7 @@ public class Node : BritoBehavior
         // Set frame color
         frameImage.color = frameColor;
         iconImage.sprite = iconSprite;
-        UpdateNode();
+        UpdateNode(true);
     }
 
 
@@ -97,11 +97,23 @@ public class Node : BritoBehavior
             }
         }
         sizeText.text = value.ToString();
-        UpdateNode();
+        UpdateNode(false);
     }
     
-    public void UpdateNode()
+    public void UpdateNode(bool initialized)
     {
-        gameObject.name = nodeCommand + " " + value.ToString();
+        string newName = nodeCommand + " " + value.ToString();
+        if (!initialized)
+            nodeManager.NodeUpdated(gameObject.name, newName);
+        else
+            nodeManager.AddNode(newName);
+        gameObject.name = newName;
+
+    }
+
+    public void DeleteNode()
+    {
+        nodeManager.NodeRemoved(gameObject);
+        Destroy(gameObject);
     }
 } 

@@ -9,11 +9,21 @@ public class Resizer: MonoBehaviour
     [SerializeField] GridLayoutGroup[] gridLayouts;
     
     [SerializeField] GameObject compileButton;
-    [SerializeField] GameObject toolbox;
+
+    [Header("Settings")]
+    [SerializeField] float originalHeight = 493f;
+    [SerializeField] float originalWidth = 877f;
+    [SerializeField] bool showScreenSize = false;
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
+        if(showScreenSize)
+        {
+            print($"[Resizer] Screen Size: ({Screen.width}, {Screen.height})");
+            originalHeight = Screen.height;
+            originalWidth = Screen.width;
+        }
         AdjustScreen();
     }
 
@@ -25,8 +35,6 @@ public class Resizer: MonoBehaviour
 
     void AdjustScreen()
     {
-        float originalHeight = 493;
-        float originalWidth = 877;
         int newHeight = Screen.height;
         int newWidth = Screen.width;
 
@@ -34,6 +42,7 @@ public class Resizer: MonoBehaviour
         float originalSpacing;
         float heightRatio = (float)newHeight / (float)originalHeight;
         float widthRatio = (float)newWidth / (float)originalWidth;
+        Debug.Log($"[Resizer] Height Ratio: {heightRatio} | Width Ratio: {widthRatio}");
         foreach(GridLayoutGroup grid in gridLayouts)
         {
             originalSpacing = grid.spacing.y;
@@ -44,10 +53,12 @@ public class Resizer: MonoBehaviour
             grid.gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(grid.gameObject.GetComponent<RectTransform>().sizeDelta.x * widthRatio, grid.gameObject.GetComponent<RectTransform>().sizeDelta.y * heightRatio);
         }
 
-        // Compile Button Scaling
-        originalHeight = 50;
-        originalWidth = 100;
-        compileButton.GetComponent<RectTransform>().sizeDelta = new Vector2(compileButton.GetComponent<RectTransform>().sizeDelta.x * widthRatio, compileButton.GetComponent<RectTransform>().sizeDelta.y * heightRatio);
-
+        if(compileButton != null)
+        {
+            // Compile Button Scaling
+            originalHeight = 50;
+            originalWidth = 100;
+            compileButton.GetComponent<RectTransform>().sizeDelta = new Vector2(compileButton.GetComponent<RectTransform>().sizeDelta.x * widthRatio, compileButton.GetComponent<RectTransform>().sizeDelta.y * heightRatio);
+        }
     }
 }
