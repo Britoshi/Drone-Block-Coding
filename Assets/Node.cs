@@ -12,7 +12,7 @@ public class Node : BritoBehavior
     Button decrease;
 
     // Variables to keep
-    int value = 20;  
+    public int value = 20;  
     Canvas canvas;
 
     [Header("Outside Scripts")]
@@ -22,8 +22,9 @@ public class Node : BritoBehavior
     // Commands possible: F, B, L, R, U, D, CC, C
     [SerializeField] string nodeCommand;
     [SerializeField] TextMeshProUGUI sizeText;
-    [SerializeField] Button increaseButton;
-    [SerializeField] Button decreaseButton;
+    [SerializeField] public Button increaseButton;
+    [SerializeField] public Button decreaseButton;
+    [SerializeField] public Button deleteButton;
 
     [Header("Image Properties")]
     [SerializeField] Image frameImage;
@@ -39,7 +40,9 @@ public class Node : BritoBehavior
     [SerializeField] Color frameColor;
     
     [Header("Behavior Properties")]
-    [SerializeField] public bool isDraggable = true;
+    [SerializeField] public bool isTemplate = false;
+    [SerializeField] public int minSize = 20;
+    [SerializeField] public int maxSize = 360;
 
 
     void Start()
@@ -49,8 +52,16 @@ public class Node : BritoBehavior
         sizeText.text = value.ToString();
         decreaseButton.onClick.AddListener(delegate {ValueUpdate("-"); });
         increaseButton.onClick.AddListener(delegate {ValueUpdate("+"); });
+        deleteButton.onClick.AddListener(delegate { Destroy(this.gameObject); });
         decreaseButton.transform.gameObject.SetActive(false);
 
+        // Disable things if a template
+        if(isTemplate)
+        {
+            deleteButton.transform.gameObject.SetActive(false);
+            decreaseButton.transform.gameObject.SetActive(false);
+            increaseButton.transform.gameObject.SetActive(false);
+        }
         // Set frame color
         frameImage.color = frameColor;
         iconImage.sprite = iconSprite;
@@ -58,23 +69,17 @@ public class Node : BritoBehavior
     }
 
 
-    public void ClickHandler(BaseEventData data)
-    {
-        if(isDraggable) return;
-        nodeManager.CreateNode(this.gameObject);
-    }
-
     public void ValueUpdate(string op)
     {
         
         if(op == "+")
         {
             value += 5;
-            if (value == 360)
+            if (value >= maxSize)
             {
                 increaseButton.transform.gameObject.SetActive(false);
             }
-            if(value - 5 == 20)
+            if(value - 5 >= minSize)
             {
                 decreaseButton.transform.gameObject.SetActive(true);
             }
@@ -82,11 +87,11 @@ public class Node : BritoBehavior
         else
         {
             value -= 5;
-            if(value == 20)
+            if(value <= minSize)
             {
                 decreaseButton.transform.gameObject.SetActive(false);
             }
-            if(value + 5 == 360)
+            if(value + 5 == maxSize)
             {
                 increaseButton.transform.gameObject.SetActive(true);
             }
@@ -99,4 +104,4 @@ public class Node : BritoBehavior
     {
         gameObject.name = nodeCommand + " " + value.ToString();
     }
-}
+} 
