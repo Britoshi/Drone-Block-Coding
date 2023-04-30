@@ -43,7 +43,7 @@ public class NodeManager : BritoBehavior
         {
             commands.Add(child.gameObject.name);
         }
-        DroneConnectionMaster.SendCommands(commands);
+        //DroneConnectionMaster.SendCommands(commands);
     }
 
 }

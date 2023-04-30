@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Unity.VisualScripting.FullSerializer;
 
 namespace TelloLib
 {
@@ -43,6 +47,38 @@ namespace TelloLib
         public static ConnectionState connectionState = ConnectionState.Disconnected;
 
         private static CancellationTokenSource cancelTokens = new CancellationTokenSource();//used to cancel listeners
+
+        public static bool DroneReady()
+        {
+            try
+            {
+                // Set a timeout for the Receive method
+                Client.Client.Client.ReceiveTimeout = 1000; // Adjust the timeout value as needed
+
+                // Receive method returns the received bytes
+                IPEndPoint remoteEndpoint = new(new IPAddress(new byte[] { 192, 168, 10, 1 }), 8889);
+                byte[] receivedData = Client.Client.Receive(ref remoteEndpoint);
+
+                // Convert the received bytes to a string using ASCII encoding
+                string receivedString = Encoding.ASCII.GetString(receivedData);
+
+
+                UnityEngine.Debug.Log("Got Packet " + receivedString);
+                 
+                // Check if the received data is "ok"
+                if (receivedString.Equals("ok", StringComparison.OrdinalIgnoreCase))
+                {
+                    UnityEngine.Debug.Log("Got OK");
+                    return true;
+                }
+            }
+            catch (SocketException)
+            {
+                // Handle or log exceptions if needed
+            }
+
+            return false;
+        }
 
         public static void takeOff()
         {
@@ -129,12 +165,7 @@ namespace TelloLib
             Client.Send(packet);
 
             Tello.queryAttAngle();//refresh
-        }
-
-        public static void MoveVertical(int distance)
-        {
-            //client.Send()
-        }
+        } 
         
         public static void setEis(int value)
         {
