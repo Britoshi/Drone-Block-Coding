@@ -8,7 +8,7 @@ public class Resizer: MonoBehaviour
     [Header("References")]
     [SerializeField] GridLayoutGroup[] gridLayouts;
     
-    [SerializeField] GameObject compileButton;
+    [SerializeField] GameObject[] buttons;
 
     [Header("Settings")]
     [SerializeField] float originalHeight = 493f;
@@ -53,12 +53,13 @@ public class Resizer: MonoBehaviour
             grid.gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(grid.gameObject.GetComponent<RectTransform>().sizeDelta.x * widthRatio, grid.gameObject.GetComponent<RectTransform>().sizeDelta.y * heightRatio);
         }
 
-        if(compileButton != null)
+        if(buttons != null)
         {
             // Compile Button Scaling
             originalHeight = 50;
             originalWidth = 100;
-            compileButton.GetComponent<RectTransform>().sizeDelta = new Vector2(compileButton.GetComponent<RectTransform>().sizeDelta.x * widthRatio, compileButton.GetComponent<RectTransform>().sizeDelta.y * heightRatio);
+            foreach(GameObject button in buttons)
+                button.GetComponent<RectTransform>().sizeDelta = new Vector2(button.GetComponent<RectTransform>().sizeDelta.x * widthRatio, button.GetComponent<RectTransform>().sizeDelta.y * heightRatio);
         }
     }
 }

@@ -4,34 +4,25 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using UnityEngine.UI.Extensions;
-
-public class NodeManager : MonoBehaviour, IDataPersistence
+using System;
+public class NodeManager : MonoBehaviour
 {
     [Header("Properties")]
     [SerializeField] Transform nodeContainer;
-    [SerializeField] GameObject nodePrefab; 
+    [SerializeField] GameObject nodePrefab;
+    [SerializeField] Color[] frameColors; 
     int _numNodes = 0;   
     private bool _fakePresent = false;
     List<string> _commands = new List<string>();
+    public List<string> Commands {get {return _commands;} set {_commands = value;}}
+
+    Vector2 _contentSize;
     
-    // INTERFACE METHODS
-    public void LoadProgram(BlockData data)
-    {
-        _commands = data.blockNames;
-    }
-
-    public void SaveProgram(ref BlockData data)
-    {
-        data.blockNames = _commands;
-    }
-
-
-    // CLASS METHODS
-
     void Start()
     {
-        //LoadProgram(data);
+        _contentSize = nodeContainer.GetComponent<RectTransform>().sizeDelta;
     }
+    // CLASS METHODS
     void Update()
     {
         if(nodeContainer.childCount > _numNodes)
@@ -49,6 +40,7 @@ public class NodeManager : MonoBehaviour, IDataPersistence
                 return;
             }
             _numNodes = nodeContainer.childCount;
+            AddNode("New Node");
             Untemplate();
         }
         else if(nodeContainer.childCount < _numNodes)
@@ -86,7 +78,8 @@ public class NodeManager : MonoBehaviour, IDataPersistence
 
     public void NodeRemoved(GameObject node)
     {
-        _commands.Remove(node.name);   
+        _commands.Remove(node.name); 
+        nodeContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(nodeContainer.GetComponent<RectTransform>().sizeDelta.x, nodeContainer.GetComponent<RectTransform>().sizeDelta.y - ( node.GetComponent<RectTransform>().sizeDelta.y * 1f) + nodeContainer.gameObject.GetComponent<GridLayoutGroup>().spacing.y);  
     }
 
     public void NodeUpdated(string oldName, string newName)
@@ -98,8 +91,110 @@ public class NodeManager : MonoBehaviour, IDataPersistence
     public void AddNode(string nodeName)
     {
         _commands.Add(nodeName);
+        try
+        {
+            GameObject node = nodeContainer.GetComponentInChildren<Node>().gameObject;
+            nodeContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(nodeContainer.GetComponent<RectTransform>().sizeDelta.x, nodeContainer.GetComponent<RectTransform>().sizeDelta.y + ( node.GetComponent<RectTransform>().sizeDelta.y * 1f) + nodeContainer.gameObject.GetComponent<GridLayoutGroup>().spacing.y);
+        }
+        catch(Exception e)
+        {
+            Debug.Log("No nodes present");
+        }
     }
 
+    public void CreateNode(string command)
+    {
+        GameObject newNode = Instantiate(nodePrefab, nodeContainer);
+        newNode.name = command;
+        Node newNodeScript = newNode.GetComponent<Node>();
+        newNodeScript.value = Convert.ToInt32(command.Substring(command.IndexOf(" ")));
+        newNodeScript.nodeManager = this;
+        string commandName = command.Substring(0, command.IndexOf(" "));
+        // Use the frameColors array for the colors
+        // Colors are as follows:
+        /*
+            0 -- F, B, L, R
+            1 -- U, D
+            2 -- CW, CCW
+        */
+        
+        switch(commandName)
+        {
+            case "forward":
+                newNodeScript.iconSprite = Resources.Load<Sprite>("Sprites/Icons/forward");
+                newNodeScript.frameColor = frameColors[0];
+                newNodeScript.nodeCommand = "forward";
+                break;
+            case "back":
+                newNodeScript.iconSprite = Resources.Load<Sprite>("Sprites/Icons/back");
+                newNodeScript.frameColor = frameColors[0];
+                newNodeScript.nodeCommand = "back";
+                break;
+            case "left":
+                newNodeScript.iconSprite = Resources.Load<Sprite>("Sprites/Icons/left");
+                newNodeScript.frameColor = frameColors[0];
+                newNodeScript.nodeCommand = "left";
+                break;
+            case "right":
+                newNodeScript.iconSprite = Resources.Load<Sprite>("Sprites/Icons/right");
+                newNodeScript.frameColor = frameColors[0];
+                newNodeScript.nodeCommand = "right";
+                break;
+            case "up":
+                newNodeScript.iconSprite = Resources.Load<Sprite>("Sprites/Icons/up");
+                newNodeScript.frameColor = frameColors[1];
+                newNodeScript.nodeCommand = "up";
+                break;
+            case "down":
+                newNodeScript.iconSprite= Resources.Load<Sprite>("Sprites/Icons/down");
+                newNodeScript.frameColor = frameColors[1];
+                newNodeScript.nodeCommand = "down";
+                break;
+            case "cw":
+                newNodeScript.iconSprite = Resources.Load<Sprite>("Sprites/Icons/clockwise");
+                newNodeScript.frameColor = frameColors[2];
+                newNodeScript.nodeCommand = "cw";
+                break;
+            case "ccw":
+                newNodeScript.iconSprite = Resources.Load<Sprite>("Sprites/Icons/counterclockwise");
+                newNodeScript.frameColor = frameColors[2];
+                newNodeScript.nodeCommand = "ccw";
+                break;
+            default:
+                break;
+        }
+        // Literally don't know why, but this needed to be in a coroutine to work
+        // All this does is update the buttons on the nodes to be appropriate
+        StartCoroutine(UpdateNodeButtons(newNodeScript));
 
+
+        // Still need some more info, but this should be okay to test
+
+        AddNode(command);
+    }
+
+    IEnumerator UpdateNodeButtons(Node nodeScript)
+    {
+        yield return new WaitForSeconds(0.01f);
+        nodeScript.ValueUpdate("=");
+    }
+
+    public void DeleteAllNodes()
+    {
+        foreach(Transform child in nodeContainer.transform)
+        {
+            child.GetComponent<Node>().DeleteNode();
+        }
+        nodeContainer.GetComponent<RectTransform>().sizeDelta = _contentSize;
+        _commands.Clear();
+    }
+
+    public void updateCommands()
+    {
+        _commands.Clear();
+        foreach(Transform child in nodeContainer.transform)
+        {
+            _commands.Add(child.gameObject.name);
+        }
+    }
 }
-

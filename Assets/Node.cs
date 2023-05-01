@@ -16,11 +16,11 @@ public class Node : BritoBehavior
     Canvas canvas;
 
     [Header("Outside Scripts")]
-    [SerializeField] NodeManager nodeManager;
+    [SerializeField] public NodeManager nodeManager;
 
     [Header("Node Properties")]
     // Commands possible: F, B, L, R, U, D, CC, C
-    [SerializeField] string nodeCommand;
+    [SerializeField] public string nodeCommand;
     [SerializeField] TextMeshProUGUI sizeText;
     [SerializeField] public Button increaseButton;
     [SerializeField] public Button decreaseButton;
@@ -28,8 +28,8 @@ public class Node : BritoBehavior
 
     [Header("Image Properties")]
     [SerializeField] Image frameImage;
-    [SerializeField] Image iconImage;
-    [SerializeField] Sprite iconSprite;
+    [SerializeField] public Image iconImage;
+    [SerializeField] public Sprite iconSprite;
     // Possilbe frame colors:
     /*
      #b27b14
@@ -37,7 +37,7 @@ public class Node : BritoBehavior
      #843021
      #011434
     */
-    [SerializeField] Color frameColor;
+    [SerializeField] public Color frameColor;
     
     [Header("Behavior Properties")]
     [SerializeField] public bool isTemplate = false;
@@ -84,7 +84,7 @@ public class Node : BritoBehavior
                 decreaseButton.transform.gameObject.SetActive(true);
             }
         }
-        else
+        else if (op == "-")
         {
             value -= 5;
             if(value <= minSize)
@@ -95,6 +95,11 @@ public class Node : BritoBehavior
             {
                 increaseButton.transform.gameObject.SetActive(true);
             }
+        }
+        else if (op == "=")
+        {
+            decreaseButton.transform.gameObject.SetActive(!(value <= minSize));
+            increaseButton.transform.gameObject.SetActive(!(value >= maxSize));
         }
         sizeText.text = value.ToString();
         UpdateNode(false);
@@ -116,4 +121,5 @@ public class Node : BritoBehavior
         nodeManager.NodeRemoved(gameObject);
         Destroy(gameObject);
     }
+
 } 
