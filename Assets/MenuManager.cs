@@ -68,6 +68,7 @@ public class MenuManager : MonoBehaviour
         {
             if(screen == mainCanvas)
             {
+                nodeManager.DeleteAllNodes();
                 programCanvas.SetActive(false);
                 mainCanvas.SetActive(true);
                 saveCanvas.SetActive(false);
@@ -93,6 +94,8 @@ public class MenuManager : MonoBehaviour
                 saveCanvas.SetActive(false);
                 programCanvas.SetActive(false);
                 filesCanvas.SetActive(true);
+                FileManager fileManager = this.GetComponent<FileManager>();
+                fileManager._loadableFiles.ResizeContainer();
             }
         }
     }

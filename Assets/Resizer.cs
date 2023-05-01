@@ -7,12 +7,13 @@ public class Resizer: MonoBehaviour
 {   
     [Header("References")]
     [SerializeField] GridLayoutGroup[] gridLayouts;
-    
     [SerializeField] GameObject[] buttons;
+
 
     [Header("Settings")]
     [SerializeField] float originalHeight = 493f;
     [SerializeField] float originalWidth = 877f;
+    [SerializeField] bool resizeGridPaddings = false;
     [SerializeField] bool showScreenSize = false;
 
     // Start is called before the first frame update
@@ -37,7 +38,6 @@ public class Resizer: MonoBehaviour
     {
         int newHeight = Screen.height;
         int newWidth = Screen.width;
-
        
         float originalSpacing;
         float heightRatio = (float)newHeight / (float)originalHeight;
@@ -47,10 +47,11 @@ public class Resizer: MonoBehaviour
         {
             originalSpacing = grid.spacing.y;
 
-
             grid.cellSize = new Vector2(grid.cellSize.x * widthRatio, grid.cellSize.y * heightRatio);
             grid.spacing = new Vector2(grid.spacing.x * widthRatio, grid.spacing.y * heightRatio);
             grid.gameObject.GetComponent<RectTransform>().sizeDelta = new Vector2(grid.gameObject.GetComponent<RectTransform>().sizeDelta.x * widthRatio, grid.gameObject.GetComponent<RectTransform>().sizeDelta.y * heightRatio);
+            if (resizeGridPaddings)
+                grid.padding = new RectOffset((int)(grid.padding.left * widthRatio), (int)(grid.padding.right * widthRatio), (int)(grid.padding.top * heightRatio), (int)(grid.padding.bottom * heightRatio));
         }
 
         if(buttons != null)

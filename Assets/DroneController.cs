@@ -8,7 +8,7 @@ using TelloCommander.Connections;
 using TelloCommander.Interfaces;
 using System.IO;
 using System;
-using UnityEditor.VersionControl;
+//using UnityEditor.VersionControl;
 using UnityEditor;
 
 public class DroneController : BritoBehavior
@@ -19,27 +19,26 @@ public class DroneController : BritoBehavior
     string CONTENT_DIR => Application.persistentDataPath + "/Content";
      
 
-    [SerializeField]
-    List<Asset> files;
+    // [SerializeField] List<Asset> files;
 
     private void Awake()
     {
         if (!Directory.Exists(CONTENT_DIR))
         {
             Directory.CreateDirectory(CONTENT_DIR);
-            foreach (var file in files)
-            {
-                // Get the file path for this asset
-                string filePath = Path.Combine(CONTENT_DIR, file.fullName);
+            // foreach (var file in files)
+            // {
+            //     // Get the file path for this asset
+            //     string filePath = Path.Combine(CONTENT_DIR, file.fullName);
 
 
 
 
-                //AssetDatabase.
+            //     //AssetDatabase.
 
-                // Write the contents of the asset to the file
-                //File.WriteAllBytes(filePath, file.Load().);
-            }
+            //     // Write the contents of the asset to the file
+            //     //File.WriteAllBytes(filePath, file.Load().);
+            // }
         } 
     }
 

@@ -11,6 +11,7 @@ public class NodeManager : MonoBehaviour
     [SerializeField] Transform nodeContainer;
     [SerializeField] GameObject nodePrefab;
     [SerializeField] Color[] frameColors; 
+    [SerializeField] GameObject runningScreen;
     int _numNodes = 0;   
     private bool _fakePresent = false;
     List<string> _commands = new List<string>();
@@ -73,7 +74,18 @@ public class NodeManager : MonoBehaviour
         {
             commands.Add(child.gameObject.name);
         }
+        StartCoroutine(_Compile(commands));
+    }
+
+    private IEnumerator _Compile(List<string> commands)
+    {
+        // Put up a screen that will not go away until the drone is done executing the commands
+        runningScreen.SetActive(true);
+        // Send the commands to the drone
         //DroneConnectionMaster.SendCommands(commands);
+        // Wait for commands to be done, then let the user make edits again
+        yield return new WaitForSeconds(5f); // ATM just wait a few seconds
+        runningScreen.SetActive(false);
     }
 
     public void NodeRemoved(GameObject node)
@@ -98,7 +110,7 @@ public class NodeManager : MonoBehaviour
         }
         catch(Exception e)
         {
-            Debug.Log("No nodes present");
+            Debug.Log("No nodes present | Exception: " + e);
         }
     }
 

@@ -6,22 +6,22 @@ using TMPro;
 public class LoadableFiles : MonoBehaviour
 {
     [SerializeField] GameObject filePrefab;
-    [SerializeField] GridLayoutGroup gridLayoutGroup;
+    [SerializeField] Transform fileContainer;
     [SerializeField] MenuManager menuManager;
     public Vector2 startingSize;
-
+    GridLayoutGroup gridLayoutGroup;
     
     void Start()
     {
+        gridLayoutGroup = fileContainer.GetComponent<GridLayoutGroup>();
         startingSize = gridLayoutGroup.GetComponent<RectTransform>().sizeDelta;
     }
 
     public void AddFile(string fileName)
     {
-        GameObject newFile = Instantiate(filePrefab, gridLayoutGroup.transform);
+        Debug.Log("Adding file: " + fileName);
+        GameObject newFile = Instantiate(filePrefab, fileContainer);
         newFile.GetComponent<FileObj>().Populate(menuManager, fileName);
-        gridLayoutGroup.GetComponent<RectTransform>().sizeDelta = new Vector2(gridLayoutGroup.GetComponent<RectTransform>().sizeDelta.x, gridLayoutGroup.GetComponent<RectTransform>().sizeDelta.y + newFile.GetComponent<RectTransform>().sizeDelta.y);
-
     }
 
     public void LoadFile(string fileName)
@@ -32,10 +32,20 @@ public class LoadableFiles : MonoBehaviour
 
     public void DeleteFiles()
     {
-        foreach(Transform child in gridLayoutGroup.transform)
+        foreach(Transform child in fileContainer)
         {
             Destroy(child.gameObject);
         }
-        gridLayoutGroup.GetComponent<RectTransform>().sizeDelta = startingSize;
+        fileContainer.GetComponent<RectTransform>().sizeDelta = startingSize;
     }
+
+    public void ResizeContainer()
+    {
+        Debug.Log("Resizing container");
+        foreach(Transform child in fileContainer)
+        {
+            fileContainer.GetComponent<RectTransform>().sizeDelta = new Vector2(fileContainer.GetComponent<RectTransform>().sizeDelta.x, fileContainer.GetComponent<RectTransform>().sizeDelta.y + (fileContainer.GetComponent<GridLayoutGroup>().cellSize.y / 2));
+        }
+    }
+
 }

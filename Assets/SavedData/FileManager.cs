@@ -7,11 +7,10 @@ using System;
 public class FileManager : MonoBehaviour
 {
     private string _dataDirPath = "";
-    private string _dataFileName = "";
 
     [Header("Data Location")]
     [SerializeField] private string _dataDirName = "DroneBlockData";
-    [SerializeField] private LoadableFiles _loadableFiles;
+    [SerializeField] public LoadableFiles _loadableFiles;
     [SerializeField] private NodeManager nodeManager;
     List<string> _dataFileNames = new List<string>();
 
@@ -37,7 +36,6 @@ public class FileManager : MonoBehaviour
         {
             if(File.Exists(dataFilePath))
             {
-                Debug.Log("File already exists at " + dataFilePath + ", deleting it.");
                 File.Delete(dataFilePath);
             }
             // Create the file
@@ -52,7 +50,6 @@ public class FileManager : MonoBehaviour
                     }
                 }
             }
-            Debug.Log("Saved data to file " + dataFilePath);
         }
         catch(Exception e)
         {
@@ -64,12 +61,10 @@ public class FileManager : MonoBehaviour
     {
         // Delete the files from the LoadableFiles object
         _loadableFiles.DeleteFiles();
-        Debug.Log("Data directory already exists at " + _dataDirPath);
         DirectoryInfo d = new DirectoryInfo(_dataDirPath);
         FileInfo[] Files = d.GetFiles("*.txt");
         foreach(FileInfo file in Files)
         {
-            Debug.Log("Found file: " + file.Name);
             _loadableFiles.AddFile(file.Name.Substring(0, file.Name.Length - 4));   
         }
     }
