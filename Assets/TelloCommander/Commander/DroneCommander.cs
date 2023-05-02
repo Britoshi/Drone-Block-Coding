@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,6 +10,7 @@ using TelloCommander.CommandDictionaries;
 using TelloCommander.Connections;
 using TelloCommander.Exceptions;
 using TelloCommander.Interfaces;
+using Unity.VisualScripting.FullSerializer;
 using UnityEngine;
 
 [assembly: InternalsVisibleTo("TelloCommander.Tests")]
@@ -76,12 +78,25 @@ namespace TelloCommander.Commander
         {
             // Connect to the drone and put it in API mode
             _connection.Connect();
-            _connection.SendCommand(ApiModeCommand);
+            //var worked = _connection.SendCommand_s(ApiModeCommand);
+            DroneController.Instance.StartCoroutine(SendAPIModeCommand());
+                
 
             // Log the API version and connection details to the history
             AddHistory($"Tello Commander Version {Version}");
-            AddHistory($"Connected to the drone in API mode");
-            
+            AddHistory($"Connected to the drone in API mode"); 
+        }
+
+        IEnumerator SendAPIModeCommand()
+        {
+            var worked = _connection.SendCommand_s(ApiModeCommand);
+
+            while (worked == null)
+            { 
+                Debug.Log("Something went wrong with returning a packet. Retrying after 3 seconds...");
+                yield return new WaitForSecondsRealtime(3f);
+                worked = _connection.SendCommand_s(ApiModeCommand);
+            }
         }
 
         /// <summary>

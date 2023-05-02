@@ -11,5 +11,6 @@ namespace TelloCommander.Interfaces
         void Close();
         void Connect();
         string SendCommand(string command);
+        string SendCommand_s(string command);
     }
 }

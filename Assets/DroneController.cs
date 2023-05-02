@@ -106,15 +106,19 @@ public class DroneController : BritoBehavior
         if (!connected && prevConnected)
             print("Drone lost connection.");
         else if (connected && !prevConnected)
+        {
+            print("Found connection! Trying to connect!");
             StartCoroutine(ConnectDrone());
+        }
         else if (!connected && !prevConnected)
             print("Failed to connect to drone. Retrying in a second...");
     }
 
     IEnumerator ConnectDrone()
     {
-        yield return new WaitForSecondsRealtime(1f);
+        //yield return new WaitForSecondsRealtime(5f);
         InitializeDrone();
+        yield return null;
     }
 
     void InitializeDrone()

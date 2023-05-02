@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Net;
+using System.Threading;
 using TelloCommander.CommandDictionaries;
 using TelloCommander.Interfaces;
 using TelloCommander.Udp;
@@ -72,6 +73,37 @@ namespace TelloCommander.Connections
             _client.Send(command);
             string response = _client.Read();
             return response;
+        }
+
+        public string SendCommand_s(string command)
+        {
+            _client.Send(command);
+            string response = null;
+            ManualResetEvent resetEvent = new ManualResetEvent(false);
+            bool isTimeout = false;
+
+            Thread readThread = new(() =>
+            {
+                response = _client.Read();
+                if (!isTimeout)
+                {
+                    resetEvent.Set();
+                }
+            });
+
+            Timer timer = new((state) =>
+            {
+                isTimeout = true;
+                readThread.Abort();
+                resetEvent.Set();
+            }, null, 1000, Timeout.Infinite);
+
+            readThread.Start();
+            resetEvent.WaitOne();
+
+            timer.Dispose();
+
+            return isTimeout ? null : response;
         }
     }
 }

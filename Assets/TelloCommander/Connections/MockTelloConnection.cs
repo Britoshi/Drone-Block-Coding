@@ -64,5 +64,10 @@ namespace TelloCommander.Connections
 
             return response;
         }
+
+        public string SendCommand_s(string command)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }
