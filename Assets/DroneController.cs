@@ -54,6 +54,11 @@ public class DroneController : BritoBehavior
         OnExecuteEnd = new() { Land };
     }
 
+    public static void Crash()
+    {
+
+    }
+
     bool TestConnection()
     { 
         string ip = "192.168.10.1";
@@ -156,7 +161,7 @@ public class DroneController : BritoBehavior
     IEnumerator Execute(List<string> commands)
     { 
         yield return new WaitForSecondsRealtime(.1f);
-
+         
         foreach (var command in commands)
         {
             try

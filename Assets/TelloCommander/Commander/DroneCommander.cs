@@ -114,7 +114,7 @@ namespace TelloCommander.Commander
         /// </summary>
         /// <param name="command"></param>
         public void RunCommand(string command)
-        {
+        { 
             command = command?.Trim();
             if (!string.IsNullOrEmpty(command))
             {
@@ -316,7 +316,12 @@ namespace TelloCommander.Commander
 
             // Send the command to the drone, await the response and add it to the
             // history
-            LastResponse = _connection.SendCommand(command);
+            LastResponse = _connection.SendCommand_s(command);
+            if (LastResponse == null)
+            {
+                DroneController.Crash();
+                throw new Exception("Oops. Drone doesn't like that command, it may be blocked!");
+            }
             AddHistory(LastResponse);
 
             // The response should not contain the word "error". If it does, and the
@@ -324,7 +329,12 @@ namespace TelloCommander.Commander
             if (LastResponse.ToLower().Contains(ErrorResponseText) && LandOnError)
             {
                 AddHistory(LandCommand);
-                string response = _connection.SendCommand(LandCommand);
+                string response = _connection.SendCommand_s(LandCommand);
+                if (response == null)
+                {
+                    DroneController.Crash();
+                    throw new Exception("Oops. Drone doesn't like that command, it may be blocked!");
+                }
                 AddHistory(response);
             }
         }
