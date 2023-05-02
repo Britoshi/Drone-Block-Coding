@@ -21,11 +21,21 @@ public class DroneController : BritoBehavior
 
     public static bool connected = false;
 
-    public static string CONTENT_DIR => Application.persistentDataPath + "/Content"; 
+    public static string CONTENT_DIR => Application.persistentDataPath + "/Content";
+
+    public delegate void VoidFunction();
+
+    static List<VoidFunction> OnExecuteStart, OnExecuteEnd;
+
+    public static void AddOnStartFunction(VoidFunction function) =>
+        OnExecuteStart.Add(function);
+
+    public static void AddOnEndFunction(VoidFunction function) =>
+        OnExecuteEnd.Add(function);
 
     private void Awake()
     {
-        if (!Directory.Exists(CONTENT_DIR))
+        if (!Directory.Exists(CONTENT_DIR) || Directory.GetFiles(CONTENT_DIR).Length <= 1)
         {
             string zipFileUrl = "https://raw.githubusercontent.com/Britoshi/Drone-Block-Coding/e12eeab0ba6308cf244b51afc85452aa7bed8343/Assets/Content.zip";
             string zipFileName = "Content.zip";
@@ -40,6 +50,8 @@ public class DroneController : BritoBehavior
 
         Instance = this;
         connected = false;
+        OnExecuteStart = new() { TakeOff };
+        OnExecuteEnd = new() { Land };
     }
 
     bool TestConnection()
@@ -126,9 +138,16 @@ public class DroneController : BritoBehavior
     public static void RunCommands(List<string> commands) =>
         Instance.StartCoroutine(Instance.Execute(commands));
 
-    IEnumerator Execute(List<string> commands)
-    { 
+    void TakeOff() => 
         commander.RunCommand("takeoff");
+    
+    void Land() =>
+        commander.RunCommand("land");
+
+    IEnumerator Execute(List<string> commands)
+    {
+        foreach (var func in OnExecuteStart) 
+            func(); 
 
         yield return new WaitForSecondsRealtime(.1f);
 
@@ -147,7 +166,8 @@ public class DroneController : BritoBehavior
          
         yield return new WaitForSecondsRealtime(.1f);
 
-        commander.RunCommand("land");
+        foreach (var func in OnExecuteEnd)
+            func();
     }
 
 }
