@@ -1,19 +1,16 @@
 using System.Collections;
 using System.Collections.Generic; 
-using UnityEngine;
-
+using UnityEngine; 
 using TelloCommander.CommandDictionaries;
 using TelloCommander.Commander;
 using TelloCommander.Connections;
 using TelloCommander.Interfaces;
 using System.IO;
-using System;
-using UnityEditor.VersionControl;
+using System; 
 using UnityEditor;
 using System.Net;
 using System.IO.Compression;
-using System.Net.Sockets;
-using UnityEditor.Experimental.GraphView;
+using System.Net.Sockets; 
 
 public class DroneController : BritoBehavior
 {
@@ -21,6 +18,8 @@ public class DroneController : BritoBehavior
 
     static CommandDictionary dictionary;
     static DroneCommander commander;
+
+    public static bool connected = false;
 
     public static string CONTENT_DIR => Application.persistentDataPath + "/Content"; 
 
@@ -40,15 +39,12 @@ public class DroneController : BritoBehavior
         }
 
         Instance = this;
+        connected = false;
     }
 
-    
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        bool failCheck = false;
-        string ip = "192.168.10.2";
+    bool TestConnection()
+    { 
+        string ip = "192.168.10.1";
         int port = 8889;
 
         IPAddress[] localIPs = Dns.GetHostAddresses(Dns.GetHostName());
@@ -58,37 +54,60 @@ public class DroneController : BritoBehavior
         foreach (IPAddress localIP in localIPs)
         {
             // Check if the local IP address is an IPv4 address
-            if (localIP.Equals(ipAdd))
-            //if (localIP.AddressFamily == AddressFamily.InterNetwork)
-            {
-                // Create a UDP client and bind it to the local IP address and any available port
-                using UdpClient udpClient = new(new IPEndPoint(localIP, 0));
-                try
-                {
-                    // Create a UDP packet to send to the specified IP and port
-                    byte[] udpData = new byte[] { 0x01, 0x02, 0x03 };
-                    udpClient.Send(udpData, udpData.Length, endpoint);
 
-                    print($"Sent UDP packet to {ip}:{port} from {localIP}:{((IPEndPoint)udpClient.Client.LocalEndPoint).Port}");
-                    failCheck = true;
-                }
-                catch (Exception ex)
-                {
-                    print($"Error sending UDP packet: {ex.Message}");
-                    return;
+            for (int i = 0; i < 10; i++)
+            {
+                ip = ip.Substring(0, ip.Length - 1) + i.ToString();
+                ipAdd = IPAddress.Parse(ip);
+                endpoint = new IPEndPoint(ipAdd, port);
+
+                if (localIP.Equals(ipAdd)) 
+                { 
+                    using UdpClient udpClient = new(new IPEndPoint(localIP, 0));
+                    try
+                    {
+                        byte[] udpData = new byte[] { 0x01, 0x02, 0x03 };
+                        udpClient.Send(udpData, udpData.Length, endpoint);
+                        return true;
+                    }
+                    catch
+                    {
+                        break;
+                    }
                 }
             }
-        }
-
-        if (!failCheck) return;
-
-        ConnectDrone();
+        } 
+        return false; 
     }
 
-    void ConnectDrone()
+    // Start is called before the first frame update
+    void Start()
     {
+        SubscribeTickFunction(DroneTickLoop);
+    }
 
-        dictionary = CommandDictionary.ReadStandardDictionary("1.3.0.0");
+    void DroneTickLoop(object sender, OnTickEventArgs args)
+    { 
+        bool prevConnected = connected;
+        connected = TestConnection();
+
+        if (!connected && prevConnected)
+            print("Drone lost connection.");
+        else if (connected && !prevConnected)
+            StartCoroutine(ConnectDrone());
+        else if (!connected && !prevConnected)
+            print("Failed to connect to drone. Retrying in a second...");
+    }
+
+    IEnumerator ConnectDrone()
+    {
+        yield return new WaitForSecondsRealtime(1f);
+        InitializeDrone();
+    }
+
+    void InitializeDrone()
+    { 
+        dictionary ??= CommandDictionary.ReadStandardDictionary("1.3.0.0");
         print("Imported Dictionary");
 
         commander = new DroneCommander(new TelloConnection(), dictionary);

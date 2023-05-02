@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,6 +18,10 @@ public abstract class BritoBehavior : MonoBehaviour
         
     }
 
+    protected static void SubscribeTickFunction(EventHandler<OnTickEventArgs> func)
+    {
+        Tick.OnTick += func;
+    }
     public static new void print(object message)
     {
         Sys.Log(message);
