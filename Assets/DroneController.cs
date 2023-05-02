@@ -135,8 +135,13 @@ public class DroneController : BritoBehavior
 
     }
 
-    public static void RunCommands(List<string> commands) =>
+    public static void RunCommands(List<string> commands)
+    {
+
+        foreach (var func in OnExecuteStart)
+            func();
         Instance.StartCoroutine(Instance.Execute(commands));
+    }
 
     void TakeOff() => 
         commander.RunCommand("takeoff");
@@ -145,10 +150,7 @@ public class DroneController : BritoBehavior
         commander.RunCommand("land");
 
     IEnumerator Execute(List<string> commands)
-    {
-        foreach (var func in OnExecuteStart) 
-            func(); 
-
+    { 
         yield return new WaitForSecondsRealtime(.1f);
 
         foreach (var command in commands)
