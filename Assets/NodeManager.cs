@@ -22,6 +22,8 @@ public class NodeManager : MonoBehaviour
     void Start()
     {
         _contentSize = nodeContainer.GetComponent<RectTransform>().sizeDelta;
+        DroneController.AddOnStartFunction(OnStartCommand);
+        DroneController.AddOnEndFunction(OnCommandEnd);
     }
     // CLASS METHODS
     void Update()
@@ -67,6 +69,16 @@ public class NodeManager : MonoBehaviour
     }
 
 
+    public void OnStartCommand()
+    {
+        runningScreen.SetActive(true);
+    }
+
+    public void OnCommandEnd()
+    {
+        runningScreen.SetActive(false);
+    }
+
     public void Compile()
     {
         List<string> commands = new List<string>();
@@ -74,18 +86,7 @@ public class NodeManager : MonoBehaviour
         {
             commands.Add(child.gameObject.name);
         }
-        StartCoroutine(_Compile(commands));
-    }
-
-    private IEnumerator _Compile(List<string> commands)
-    {
-        // Put up a screen that will not go away until the drone is done executing the commands
-        runningScreen.SetActive(true);
-        // Send the commands to the drone
-        //DroneConnectionMaster.SendCommands(commands);
-        // Wait for commands to be done, then let the user make edits again
-        yield return new WaitForSeconds(5f); // ATM just wait a few seconds
-        runningScreen.SetActive(false);
+        DroneController.RunCommands(commands);
     }
 
     public void NodeRemoved(GameObject node)
