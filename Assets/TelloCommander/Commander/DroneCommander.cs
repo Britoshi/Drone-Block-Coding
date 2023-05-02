@@ -81,6 +81,7 @@ namespace TelloCommander.Commander
             // Log the API version and connection details to the history
             AddHistory($"Tello Commander Version {Version}");
             AddHistory($"Connected to the drone in API mode");
+            
         }
 
         /// <summary>

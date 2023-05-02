@@ -51,7 +51,8 @@ namespace TelloCommander.Connections
         /// </summary>
         public void Connect()
         {
-            _client.Connect(IPAddress.Parse(_address), _port);
+            //_client.Connect(IPAddress.Parse(_address), _port);
+            _client.ConnectAsync(IPAddress.Parse(_address), _port);
         }
 
         /// <summary>

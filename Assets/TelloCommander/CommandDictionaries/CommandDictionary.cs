@@ -217,7 +217,7 @@ namespace TelloCommander.CommandDictionaries
         /// <returns></returns>
         private static string GetContentFilePath(string file)
         { 
-            string path = Path.Combine(GetAssemblyLocation(), file);
+            string path = Path.Combine(DroneController.CONTENT_DIR, file);
             return path;
         }
     }
