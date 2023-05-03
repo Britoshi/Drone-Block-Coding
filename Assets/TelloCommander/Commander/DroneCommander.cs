@@ -316,7 +316,7 @@ namespace TelloCommander.Commander
 
             // Send the command to the drone, await the response and add it to the
             // history
-            LastResponse = _connection.SendCommand_s(command, 10);
+            LastResponse = _connection.SendCommand_s(command, 10000);
             if (LastResponse == null)
             {
                 DroneController.Crash();
@@ -329,7 +329,7 @@ namespace TelloCommander.Commander
             if (LastResponse.ToLower().Contains(ErrorResponseText) && LandOnError)
             {
                 AddHistory(LandCommand);
-                string response = _connection.SendCommand_s(LandCommand, 5);
+                string response = _connection.SendCommand_s(LandCommand, 5000);
                 if (response == null)
                 {
                     DroneController.Crash();
