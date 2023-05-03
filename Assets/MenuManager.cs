@@ -17,19 +17,57 @@ public class MenuManager : MonoBehaviour
     [SerializeField] NodeManager nodeManager;
     [SerializeField] Button saveButton;
     [SerializeField] Button existingSaveButton;
+    [SerializeField] Button runButton;
     [SerializeField] TextMeshProUGUI saveName;
+    [SerializeField] Image[] connectedIcons;
 
     [Header("Properties")]
     [SerializeField] bool debug = false;
+    [SerializeField] Color connectedColor;
+    [SerializeField] Color disconnectedColor;
     public string currentFile = "";
     public FileObj[] savedFiles;
 
+
+    private bool iconsUpdated = false;
+
     void Start()
     {
+        iconsUpdated = DroneController.connected;
         saveButton.onClick.AddListener(delegate { SaveBehavior(false); });
         existingSaveButton.onClick.AddListener(delegate { SaveCheck(); });
         if (!debug)
             SwitchScreen(mainCanvas);
+    }
+
+    public void Update()
+    {
+        if(DroneController.connected)
+        {
+            if(iconsUpdated)
+            {
+                foreach(Image image in connectedIcons)
+                {
+                    image.color = connectedColor;
+                }
+                runButton.interactable = true;
+                runButton.image.color = new Color(0, 0, 0, 0);
+                iconsUpdated = false;
+            }
+        }
+        else
+        {
+            if(!iconsUpdated)
+            {
+                foreach (Image image in connectedIcons)
+                {
+                    image.color = disconnectedColor;
+                }
+                runButton.interactable = false;
+                runButton.image.color = new Color(0, 0, 0, 1);
+                iconsUpdated = true;
+            }
+        }
     }
     public void LoadProgram(string programName)
     {

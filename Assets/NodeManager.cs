@@ -81,6 +81,7 @@ public class NodeManager : MonoBehaviour
 
     public void Compile()
     {
+        runningScreen.SetActive(true);
         List<string> commands = new List<string>();
         foreach(Transform child in nodeContainer.transform)
         {
