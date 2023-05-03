@@ -89,13 +89,13 @@ namespace TelloCommander.Commander
 
         IEnumerator SendAPIModeCommand()
         {
-            var worked = _connection.SendCommand_s(ApiModeCommand);
+            var worked = _connection.SendCommand_s(ApiModeCommand, 1000);
 
             while (worked == null)
             { 
                 Debug.Log("Something went wrong with returning a packet. Retrying after 3 seconds...");
                 yield return new WaitForSecondsRealtime(3f);
-                worked = _connection.SendCommand_s(ApiModeCommand);
+                worked = _connection.SendCommand_s(ApiModeCommand, 1000);
             }
         }
 
@@ -316,11 +316,11 @@ namespace TelloCommander.Commander
 
             // Send the command to the drone, await the response and add it to the
             // history
-            LastResponse = _connection.SendCommand_s(command);
+            LastResponse = _connection.SendCommand_s(command, 10);
             if (LastResponse == null)
             {
                 DroneController.Crash();
-                throw new Exception("Oops. Drone doesn't like that command, it may be blocked!");
+                throw new Exception("Oops. Drone doesn't like that command, Last response was a null?");
             }
             AddHistory(LastResponse);
 
@@ -329,11 +329,11 @@ namespace TelloCommander.Commander
             if (LastResponse.ToLower().Contains(ErrorResponseText) && LandOnError)
             {
                 AddHistory(LandCommand);
-                string response = _connection.SendCommand_s(LandCommand);
+                string response = _connection.SendCommand_s(LandCommand, 5);
                 if (response == null)
                 {
                     DroneController.Crash();
-                    throw new Exception("Oops. Drone doesn't like that command, it may be blocked!");
+                    throw new Exception("The drone couldn't even land dawg. What happened.");
                 }
                 AddHistory(response);
             }

@@ -75,7 +75,7 @@ namespace TelloCommander.Connections
             return response;
         }
 
-        public string SendCommand_s(string command)
+        public string SendCommand_s(string command, int duration)
         {
             _client.Send(command);
             string response = null;
@@ -96,7 +96,7 @@ namespace TelloCommander.Connections
                 isTimeout = true;
                 readThread.Abort();
                 resetEvent.Set();
-            }, null, 1000, Timeout.Infinite);
+            }, null, duration, Timeout.Infinite);
 
             readThread.Start();
             resetEvent.WaitOne();
