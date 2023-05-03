@@ -101,6 +101,9 @@ public class DroneController : BritoBehavior
     void Start()
     {
         SubscribeTickFunction(DroneTickLoop);
+
+        //dictionary ??= CommandDictionary.ReadStandardDictionary("1.3.0.0");
+        //print("Imported Dictionary");
     }
 
     void DroneTickLoop(object sender, OnTickEventArgs args)
@@ -128,10 +131,8 @@ public class DroneController : BritoBehavior
 
     void InitializeDrone()
     { 
-        dictionary ??= CommandDictionary.ReadStandardDictionary("1.3.0.0");
-        print("Imported Dictionary");
 
-        commander = new DroneCommander(new TelloConnection(), dictionary);
+        commander = new DroneCommander(new TelloConnection());
         print("Initiated Drone Commander");  
 
         commander.Connect();
@@ -152,11 +153,47 @@ public class DroneController : BritoBehavior
         Instance.StartCoroutine(Instance.Execute(commands));
     }
 
+
+    public int GetBatteryPercent()
+    { 
+        var battery = commander.QueryVariable("battery?");
+        if (battery == null)
+        {
+            error("Something went terribly wrong.");
+            return -1;
+        }
+
+        return int.Parse(battery);
+    }
+
+    public bool CanExecuteCommand()
+    { 
+        if (!connected)
+        {
+            print("You're not connected to the Drone!");
+            return false;
+        }
+
+        if (GetBatteryPercent() < 35)
+        {
+            print("Not enough juice.");
+            return false;
+        }
+        return true;
+    }
+
+    void RunCommand(string command)
+    {
+        if (!CanExecuteCommand()) return;
+
+        commander.RunCommand(command);
+    }
+
     void TakeOff() => 
-        commander.RunCommand("takeoff");
+        RunCommand("takeoff");
     
     void Land() =>
-        commander.RunCommand("land");
+        RunCommand("land");
 
     IEnumerator Execute(List<string> commands)
     { 
@@ -166,7 +203,7 @@ public class DroneController : BritoBehavior
         {
             try
             {
-                commander.RunCommand(command);
+                RunCommand(command);
             }
             catch
             {

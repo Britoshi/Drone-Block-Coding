@@ -9,7 +9,7 @@ namespace TelloCommander.Commander
     [Obsolete("TelloCommander.Commander.ConsoleCommander has moved to the TelloCommander.CommandLine library", true)]
     public class ConsoleCommander : DroneCommander
     {
-        public ConsoleCommander(ITelloConnection connection, CommandDictionary dictionary) : base(connection, dictionary)
+        public ConsoleCommander(ITelloConnection connection) : base(connection)
         {
 
         }

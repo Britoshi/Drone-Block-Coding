@@ -61,9 +61,9 @@ namespace TelloCommander.CommandDictionaries
 
             ValidateXml(file);
 
-            using (StreamReader reader = new StreamReader(file))
+            using (StreamReader reader = new(file))
             {
-                XmlSerializer serializer = new XmlSerializer(typeof(CommandDictionary));
+                XmlSerializer serializer = new(typeof(CommandDictionary));
                 dictionary = (CommandDictionary)serializer.Deserialize(reader);
             }
 
@@ -111,11 +111,9 @@ namespace TelloCommander.CommandDictionaries
             settings.ValidationType = ValidationType.Schema;
             settings.ValidationEventHandler += OnValidationEvent;
 
-            using (XmlReader reader = XmlReader.Create(file, settings))
+            using XmlReader reader = XmlReader.Create(file, settings);
+            while (reader.Read())
             {
-                while (reader.Read())
-                {
-                }
             }
         }
 
