@@ -316,7 +316,7 @@ namespace TelloCommander.Commander
 
             // Send the command to the drone, await the response and add it to the
             // history
-            LastResponse = _connection.SendCommand_s(command, 10000);
+            LastResponse = _connection.SendCommand(command);//_s(command, 10000);
             if (LastResponse == null)
             {
                 DroneController.Crash();
