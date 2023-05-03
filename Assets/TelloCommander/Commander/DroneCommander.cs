@@ -37,17 +37,15 @@ namespace TelloCommander.Commander
 
         private const string HeightUnits = "dm";
 
-        private readonly ITelloConnection _connection;
-        private readonly CommandValidator _validator;
+        private readonly ITelloConnection _connection; 
         private readonly char[] _separators = { ' ', '\t' };
         private readonly List<string> _history = new List<string>();
         private readonly Stack<string> _scriptPaths = new Stack<string>();
 
-        public DroneCommander(ITelloConnection connection, CommandDictionary dictionary)
+        public DroneCommander(ITelloConnection connection)
         {
             LandOnError = true;
-            _connection = connection;
-            _validator = new CommandValidator(dictionary);
+            _connection = connection; 
         }
 
         /// <summary>
@@ -121,8 +119,7 @@ namespace TelloCommander.Commander
                 try
                 {
                     // Confirm the command is valid (this will throw an exception on error)
-                    string[] words = command.Split(_separators, StringSplitOptions.RemoveEmptyEntries);
-                    _validator.ValidateCommand(_connection.ConnectionType, words);
+                    string[] words = command.Split(_separators, StringSplitOptions.RemoveEmptyEntries); 
 
                     switch (words[0])
                     {
@@ -297,6 +294,12 @@ namespace TelloCommander.Commander
             return fullPath;
         }
 
+        public string QueryVariable(string variable)
+        {
+            var response = _connection.SendCommand_s(variable, 1000);
+            return response;
+        }
+
         /// <summary>
         /// Send the specified command to the drone and display the response
         /// </summary>
@@ -307,12 +310,7 @@ namespace TelloCommander.Commander
 
             // If this is a "move down" command, check the drone is high enough to
             // do the move. Otherwise, it doesn't move and becomes unresponsive
-            string[] words = command.Split(_separators, StringSplitOptions.RemoveEmptyEntries);
-            if ((words[0] == DownCommand) && (_validator.Dictionary.Commands.FirstOrDefault(c => c.Name == GetHeightCommand) != null))
-            {
-                // Move down validation will throw an exception if the move is not possible
-                ValidateMoveDown(words);
-            }
+            string[] words = command.Split(_separators, StringSplitOptions.RemoveEmptyEntries); 
 
             // Send the command to the drone, await the response and add it to the
             // history
