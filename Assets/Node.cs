@@ -54,6 +54,10 @@ public class Node : BritoBehavior
         increaseButton.onClick.AddListener(delegate {ValueUpdate("+"); });
         deleteButton.onClick.AddListener(delegate {  DeleteNode(); });
         decreaseButton.transform.gameObject.SetActive(false);
+        
+        // Change the colors of the increase and decrease buttons
+        decreaseButton.image.color = frameColor;
+        increaseButton.image.color = frameColor;
 
         // Disable things if a template
         if(isTemplate)

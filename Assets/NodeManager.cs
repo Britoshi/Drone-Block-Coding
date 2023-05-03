@@ -5,6 +5,8 @@ using UnityEngine.UI;
 using UnityEngine.Events;
 using UnityEngine.UI.Extensions;
 using System;
+using UnityEngine.UIElements;
+
 public class NodeManager : MonoBehaviour
 {
     [Header("Properties")]
@@ -76,12 +78,27 @@ public class NodeManager : MonoBehaviour
         runningScreen.SetActive(false);
     }
 
+
+    // This function is where we'll have any of the error checking to ensure we don't go over the limits in place
+    // FOR THE DEMO: Only working limit is with height.
     public void Compile()
     {
+        int maxHeight = PlayerPrefs.GetInt("maxHeight");
+        int maxRadius = PlayerPrefs.GetInt("maxRadius");
+        int currentHeight = 10;
         runningScreen.SetActive(true);
         List<string> commands = new List<string>();
         foreach(Transform child in nodeContainer.transform)
         {
+            string command = child.gameObject.name;
+            if(command.Contains("up"))
+            {
+                currentHeight += Convert.ToInt32(command.Substring(command.IndexOf(" ")).Trim());
+                if (currentHeight > maxHeight)
+                {
+                    continue;
+                }
+            }
             commands.Add(child.gameObject.name);
         }
         DroneController.RunCommands(commands);
