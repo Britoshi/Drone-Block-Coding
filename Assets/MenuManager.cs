@@ -9,7 +9,6 @@ using TMPro;
 public class MenuManager : MonoBehaviour
 {
     [Header("References")]
-    [SerializeField] GameObject loadMenu;
     [SerializeField] GameObject mainCanvas;
     [SerializeField] GameObject programCanvas;
     [SerializeField] GameObject saveCanvas;
@@ -20,6 +19,10 @@ public class MenuManager : MonoBehaviour
     [SerializeField] Button runButton;
     [SerializeField] TextMeshProUGUI saveName;
     [SerializeField] Image[] connectedIcons;
+    [SerializeField] TMP_InputField radiusInput;
+    [SerializeField] TMP_InputField heightInput;
+    [SerializeField] TextMeshProUGUI radiusExample;
+    [SerializeField] TextMeshProUGUI heightExample;
 
     [Header("Properties")]
     [SerializeField] bool debug = false;
@@ -38,6 +41,25 @@ public class MenuManager : MonoBehaviour
         existingSaveButton.onClick.AddListener(delegate { SaveCheck(); });
         if (!debug)
             SwitchScreen(mainCanvas);
+
+        // Set up playerprefs in case they haven't been initialized :)
+        if(!PlayerPrefs.HasKey("maxRadius"))
+        {
+            PlayerPrefs.SetInt("maxRadius", 60);
+        }
+        else
+        {
+            radiusExample.text = $"Currently: {PlayerPrefs.GetInt("maxRadius")}";
+        }
+
+        if(!PlayerPrefs.HasKey("maxHeight"))
+        {
+            PlayerPrefs.SetInt("maxHeight", 200);
+        }
+        else
+        {
+            heightExample.text = $"Currently: {PlayerPrefs.GetInt("maxHeight")}";
+        }
     }
 
     public void Update()
@@ -189,4 +211,17 @@ public class MenuManager : MonoBehaviour
         Debug.Log("Creating new file");
         SwitchScreen(programCanvas);
    }
+
+    public void UpdatePrefs(GameObject panel)
+    {
+        int newRadius = int.Parse(radiusInput.text);
+        int newHeight = int.Parse(heightInput.text);
+        radiusInput.text = "";
+        heightInput.text = "";
+        PlayerPrefs.SetInt("maxRadius", newRadius);
+        radiusExample.text = ($"Currently: {PlayerPrefs.GetInt("maxRadius")}");
+        PlayerPrefs.SetInt("maxHeight", newHeight);
+        heightExample.text = $"Currently: {PlayerPrefs.GetInt("maxHeight")}";
+        BackGameObject(panel);
+    }
 }

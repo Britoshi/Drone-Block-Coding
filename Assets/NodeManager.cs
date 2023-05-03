@@ -25,6 +25,7 @@ public class NodeManager : MonoBehaviour
         DroneController.AddOnStartFunction(OnStartCommand);
         DroneController.AddOnEndFunction(OnCommandEnd);
     }
+
     // CLASS METHODS
     void Update()
     {
@@ -52,9 +53,6 @@ public class NodeManager : MonoBehaviour
         }
     }
 
-
-
-
     public void Untemplate()
     {
         foreach(Transform child in nodeContainer.transform)
@@ -67,7 +65,6 @@ public class NodeManager : MonoBehaviour
             node.increaseButton.transform.gameObject.SetActive(true);
         }
     }
-
 
     public void OnStartCommand()
     {
@@ -212,3 +209,4 @@ public class NodeManager : MonoBehaviour
         }
     }
 }
+
